@@ -1,0 +1,114 @@
+﻿@{
+
+}
+<h2>
+    Catálogo de Produtos
+</h2>
+
+<div class="d-flex gap-2 justify-content-between mb-4">
+    <input type="text" class="form-control w-25" id="txtBuscaNome" placeholder="Pesquisar Nome..." />
+    <input type="text" class="form-control w-25" id="txtBuscaPreço" placeholder="Pesquisar Preço..." />
+    <button type="button" class="btn-secondary" id="btnBuscar">Buscar</button>
+</div>
+
+<div class="b-4 d-flex flex-md-column">
+    <div class="mb-3">
+        <h4>Adicionar Produto</h4>
+    </div>
+    
+    <div class="row bm-6">
+        <div class="col-6 mb-6">
+            <input type="text" class="form-control" id="txtNome" placeholder="Nome" />
+        </div>
+        <div class="col-6 mb-6">
+            <input type="text" class="form-control" id="txtPreço" placeholder="Preço" />
+        </div>
+    </div>
+    
+    <div class="d-flex justify-content-end mt-5">
+        <button type="button" class="btn-secondary" id="btnAdicionar">Adicionar</button>
+    </div>
+</div>
+
+<hr />
+
+<div id="Resultado"></div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        function carregarProdutos(nome = "", preco = "") {
+            $.ajax({
+                url: '/Product/ListarProdutos',
+                type: 'GET',
+                data: { nome: nome, preco: preco }, // envia como parâmetros separados
+                dataType: 'json',
+                success: function (produtos) {
+                    let html = "";
+
+                    produtos.forEach(p => {
+                        const precoFormatado = new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL'
+                        }).format(p.preco);
+
+                        html += `
+                            <div class="produto border rounded p-3 mb-2">
+                                <h3>${p.nome}</h3>
+                                <p>Preço: ${precoFormatado}</p>
+                            </div>
+                        `;
+                    });
+
+                    $('#Resultado').html(html);
+                },
+                error: function () {
+                    alert('Erro ao carregar produtos.');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            // carregar todos ao abrir
+            carregarProdutos();
+
+            // busca com filtros
+            $('#btnBuscar').click(function () {
+                const nome = $('#txtBuscaNome').val();
+                const preco = $('#txtBuscaPreço').val();
+                carregarProdutos(nome, preco);
+            });
+
+            // adicionar produto
+            $('#btnAdicionar').click(function () {
+                const nome = $('#txtNome').val();
+                const preco = parseFloat($('#txtPreço').val());
+
+                if (!nome || isNaN(preco)) {
+                    alert('Por favor, preencha todos os campos corretamente.');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Product/AdicionarProduto',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ Nome: nome, Preco: preco }),
+                    success: function () {
+                        alert('Produto adicionado com sucesso!');
+                        $('#txtNome').val('');
+                        $('#txtPreço').val('');
+                        carregarProdutos();
+                    },
+                    error: function (xhr) {
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            alert(`Erro: ${xhr.responseJSON.error}`);
+                        } else {
+                            alert('Erro ao adicionar produto.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

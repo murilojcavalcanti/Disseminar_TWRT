@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ValidacaoExcecoes.Core.Entities;
+using ValidacaoExececoes.Core.Entities;
 
 namespace ValidacaoExcecoes.Infra.Persistence
 {
@@ -9,6 +9,6 @@ namespace ValidacaoExcecoes.Infra.Persistence
         {
             
         }
-        DbSet<User> Users { get; set; }
+        DbSet<Product> Products { get; set; }
     }
 }

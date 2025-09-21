@@ -1,10 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
-using ValidacaoExcecoes.Application.UserServices;
-using ValidacaoExcecoes.Application.Validators;
-using ValidacaoExcecoes.Application.ViewModels.UserModels;
+using ValidacaoExcecoes.Application.Services.ProductServices;
+using ValidacaoExcecoes.Application.ViewModels.ProductModels;
 
 namespace ValidacaoExcecoes.Application
 {
@@ -12,14 +10,14 @@ namespace ValidacaoExcecoes.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddScoped<IUserService, UserService>().AddValidators() ;
+            services.AddScoped<IProductService, ProductService>().AddValidators() ;
             return services;
         }
 
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
             services.AddFluentValidationAutoValidation()
-                .AddValidatorsFromAssemblyContaining<UserCreateModel>();
+                .AddValidatorsFromAssemblyContaining<ProductModel>();
             return services;
         }
     }
